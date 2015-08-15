@@ -10,15 +10,22 @@ Meteor.publish('clients-list', function(){
 Clients.before.insert(function(userId, doc){
 	doc.createdBy = userId;
 	doc.createdAt = moment().utc().format();
+	formatClient(doc);
 	_.compactObject(doc);
-	console.log(doc);
 });
 Clients.before.update(function(userId, doc){
 	doc.updatedBy = userId;
 	doc.updatedBy = moment().utc().format();
+	formatClient(doc);
 	_.compactObject(doc);
-	console.log(doc);
 });
+function formatClient(doc){
+	doc.name      = S(doc.name).capitalize().s;
+	doc.lastName  = S(doc.lastName).capitalize().s;
+	doc.company   = doc.company.toUpperCase();
+	doc.position  = S(doc.position).capitalize().s;
+	return doc;
+}
 /**
  * Clients Allow/Deny rules
  */

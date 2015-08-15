@@ -7,18 +7,42 @@
 		</div>
 	</div>
 </div>
-<table class="ui celled table">
+<table class="ui sortable celled table">
 	<thead>
 		<tr>
 			<th>
 				<sg-checkbox sg-class="fitted" ng-model="clients.all"></sg-checkbox>
 			</th>
-			<th data-column="name">Nombre</th>
-			<th data-column="company">Empresa</th>
-			<th data-column="position">Cargo</th>
-			<th data-column="phones">Telefonos</th>
-			<th data-column="emails">Correos</th>
-			<th data-column="addresses">Direcciones</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('name')"
+					ng-class="{'ascending': clients.ascBy('name'), 'descending': clients.desBy('name')}">
+				Nombre
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('company')"
+					ng-class="{'ascending': clients.ascBy('company'), 'descending': clients.desBy('company')}">
+				Empresa
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('position')"
+					ng-class="{'ascending': clients.ascBy('position'), 'descending': clients.desBy('position')}">
+				Cargo
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('phones')"
+					ng-class="{'ascending': clients.ascBy('phones'), 'descending': clients.desBy('phones')}">
+				Telefonos
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('emails')"
+					ng-class="{'ascending': clients.ascBy('emails'), 'descending': clients.desBy('emails')}">
+				Correos
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('addresses')"
+					ng-class="{'ascending': clients.ascBy('addresses'), 'descending': clients.desBy('addresses')}">
+				Direcciones
+			</th>
 		</tr>
 	</thead>
 
@@ -35,7 +59,7 @@
 		</tr>
 		<tr ng-repeat="client in clients.list track by client._id">
 			<td><sg-checkbox sg-class="fitted" ng-click="clients.select(client._id)"></sg-checkbox></td>
-			<td>{{client.name}}</td>
+			<td>{{client.name + ' ' + client.lastName}}</td>
 			<td>{{client.company}}</td>
 			<td>{{client.position}}</td>
 			<td>
