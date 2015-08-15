@@ -1,0 +1,76 @@
+<div class="ui secondary menu">
+	<div class="right item">
+		<div 	class="ui red button"
+					ng-click="clients.remove()"
+					ng-class="{'disabled': clients.selected.length === 0}">
+			<i class="remove icon"></i> Eliminar 
+		</div>
+	</div>
+</div>
+<table class="ui celled table">
+	<thead>
+		<tr>
+			<th>
+				<sg-checkbox sg-class="fitted" ng-model="clients.all"></sg-checkbox>
+			</th>
+			<th data-column="name">Nombre</th>
+			<th data-column="company">Empresa</th>
+			<th data-column="position">Cargo</th>
+			<th data-column="phones">Telefonos</th>
+			<th data-column="emails">Correos</th>
+			<th data-column="addresses">Direcciones</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr ng-if="clients.list === null" class="center aligned">
+			<td colspan="7" class="center aligned">
+				<div class="ui active small inline loader"></div>
+			</td>
+		</tr>
+		<tr ng-if="clients.list.length === 0" class="warning center aligned">
+			<td colspan="7">
+				No se ha creado níngun cliente. <a ng-click="clients.activateTav('new')" ui-sref="meraki_clients.new">¿Desea crear uno?</a>
+			</td>
+		</tr>
+		<tr ng-repeat="client in clients.list track by client._id">
+			<td><sg-checkbox sg-class="fitted" ng-click="clients.select(client._id)"></sg-checkbox></td>
+			<td>{{client.name}}</td>
+			<td>{{client.company}}</td>
+			<td>{{client.position}}</td>
+			<td>
+				<div class="ui list">
+					<div ng-repeat="phone in client.phones" class="item">
+						<i class="phone square icon"></i>
+						<div class="content">
+							{{phone}}
+						</div>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="ui list">
+					<div ng-repeat="email in client.emails" class="item">
+						<i class="mail square icon"></i>
+						<div class="content">
+							{{email}}
+						</div>
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="ui list">
+					<a ng-repeat="address in client.addresses" class="item">
+						<i class="icon home"></i>
+						<div class="content">
+							<div class="header">{{address.street}}</div>
+							<div class="description">
+								{{address.city + ', ' + address.dep}}
+							</div>
+						</div>
+					</a>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>

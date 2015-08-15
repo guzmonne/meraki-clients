@@ -4,22 +4,13 @@
 # but you can also edit it by hand.
 
 meteor-platform
-urigo:angular@0.9.2-alpha.1
+urigo:angular@0.9.3
 angularui:angular-ui-router
-accounts-password
-accounts-ui
-accounts-facebook
-accounts-twitter
-angularutils:pagination
-tmeasday:publish-counts
-email
-angularui:angular-google-maps
-less
-angular:angular-material
-planettraining:material-design-icons
-cfs:standard-packages
-cfs:gridfs
-danialfarid:ng-file-upload
-alexk111:ng-img-crop
-netanelgilad:angular-sortable-view
-vitalets:angular-xeditable
+semantic:ui
+rzymek:moment-locale-es
+flemay:less-autoprefixer
+aldeed:simple-schema
+aldeed:collection2
+matb33:collection-hooks
+guzmonne:angular-gux
+guzmonne:semantic-gux

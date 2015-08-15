@@ -3,15 +3,42 @@
   <base href="/">
 </head>
 
-<body layout="column">
-  <md-toolbar md-scroll-shrink layout="row" layout-align="start center" layout-padding>
-    <div>
-      <a href="/parties">Parties</a>
+<body>
+  <!-- SIDEBAR -->
+  <div class="ui sidebar inverted vertical menu">
+    <div class="item">
+      <a class="ui logo icon image" href="/">
+        <img src="http://placehold.it/50x50">
+      </a>
+      <a href="/"><b>&nbsp;CONApps</b></a>
     </div>
-    <span flex></span>
-    <div class="navbar-right navbar-text">
-      <meteor-include src="loginButtons"></meteor-include>
-    </div>
-  </md-toolbar>
-  <div ui-view class="container-fluid"></div>
+    <a class="item">
+      Meraki Clients
+    </a>
+    <a class="item">
+      Switch Selector
+    </a>
+    <a class="item">
+      Meraki Quoter
+    </a>
+  </div>
+  <!-- PUSHER -->
+  <div class="pusher" ng-controller="DashboardCtrl as dashboard">
+    <!-- HEADER -->
+    <div class="ui secondary pointing menu">
+      <a class="active item red">
+        CONApps 
+      </a>
+      <a class="icon item" ng-click="dashboard.toggleSidebar()">
+        <i class="sidebar icon"></i>
+      </a>
+      <div class="right menu">
+        <a class="ui item">
+          Iniciar Sesión
+        </a>
+      </div>
+    </div>  
+    <!-- CONTENT -->
+    <div ui-view class="pusher" style="padding: 10px"></div>
+  </div>
 </body>

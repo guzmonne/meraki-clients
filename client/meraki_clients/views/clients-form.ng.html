@@ -1,0 +1,124 @@
+<div class="ui container">
+  <form class="ui form" ng-class="{'error': clients.errors.length > 0}" ng-submit="clients.save()">
+    <h4 class="ui dividing header">
+      Nuevo Cliente
+    </h4>
+    <div class="field">
+      <div class="two fields">
+        <div class="required field" ng-class="{'error': clients.fieldHasError('name')}">
+          <label>Nombre</label>
+          <input  type="text"
+                  placeholder="Nombre"
+                  ng-model="clients.activeClient.name">
+        </div> 
+        <div class="required field" ng-class="{'error': clients.fieldHasError('lastName')}">
+          <label>Apellido</label>
+          <input type="text" ng-model="clients.activeClient.lastName" placeholder="Apellido">
+        </div> 
+      </div>
+    </div>
+    <div class="field">
+      <div class="two fields">
+        <div class="required field" ng-class="{'error': clients.fieldHasError('company')}">
+          <label>Empresa</label>
+          <input type="text" ng-model="clients.activeClient.company" placeholder="Empresa">
+        </div>
+        <div class="required field" ng-class="{'error': clients.fieldHasError('position')}">
+          <label>Cargo</label>
+          <input type="text" ng-model="clients.activeClient.position" placeholder="Cargo">
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Telefonos</label>
+      <div class="four fields">
+        <div  ng-repeat="phone in clients.activeClient.phones track by $index"
+              class="field"
+              ng-class="{'error': clients.fieldHasError('phones' + '.' + $index)}">
+          <div class="ui icon input">
+            <input type="text" ng-model="phone">
+            <i class="circular minus red link icon" ng-click="clients.removePhone($index)"></i>
+          </div>
+        </div>
+        <div class="four wide field">
+          <div class="ui icon input">
+            <input type="text" ng-model="clients.newPhone" placeholder="Telefono #{{clients.activeClient.phones.length + 1}}" gux-enter="clients.addPhone()">
+            <i class="circular plus green link icon" ng-click="clients.addPhone()"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Correos</label>
+      <div class="four fields">
+        <div  ng-repeat="email in clients.activeClient.emails track by $index" 
+              class="field"
+              ng-class="{'error': clients.fieldHasError('emails' + '.' + $index)}">
+          <div class="ui icon input">
+            <input type="text" ng-model="email">
+            <i class="circular minus red link icon" ng-click="clients.removeEmail($index)"></i>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui icon input">
+            <input type="text" gux-enter="clients.addEmail()" ng-model="clients.newEmail" placeholder="Correo #{{clients.activeClient.emails.length + 1}}">
+            <i class="circular plus green link icon" ng-click="clients.addEmail()"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <label><strong>Direcciones</strong></label>
+    <div ng-repeat="address in clients.activeClient.addresses track by $index" class="field" ng-class="{'error': clients.fieldHasError('addresses' + '.' + $index)}">
+      <div class="four fields">
+        <div class="field">
+          <input type="text" ng-model="address.street" placeholder="Calle #{{$index}}" ng-change="clients.test()">
+        </div>
+        <div class="field">
+          <input type="text" ng-model="address.city" placeholder="Ciudad #{{$index}}">
+        </div>
+        <div class="field">
+          <input type="text" ng-model="address.dep" placeholder="Departamento #{{$index}}">
+        </div>
+        <div class="field">
+          <button class="ui inverted circular basic icon red button" ng-click="clients.removeAddress($index); $event.preventDefault()">
+            <i class="minus icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="four fields">
+        <div class="field">
+          <input type="text" name="street" ng-model="clients.newAddress.street" gux-enter="clients.addAddress()" placeholder="Calle #{{clients.activeClient.addresses.length + 1}}">
+        </div>
+        <div class="field">
+          <input type="text" name="city" ng-model="clients.newAddress.city" gux-enter="clients.addAddress()" placeholder="Ciudad #{{clients.activeClient.addresses.length + 1}}">
+        </div>
+        <div class="field">
+          <input type="text" name="dep" ng-model="clients.newAddress.dep" gux-enter="clients.addAddress()" placeholder="Departamento #{{clients.activeClient.addresses.length + 1}}">
+        </div>
+        <div class="field">
+          <button class="ui inverted circular basic icon green button" ng-click="clients.addAddress(); $event.preventDefault()">
+            <i class="add icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="ui error message">
+      <div class="header">
+        Se ha/n encontrado {{clients.errors.length}} error/es
+      </div>
+      <p ng-repeat="error in clients.errors track by $index">
+        {{error.msg}}
+      </p>
+    </div>
+    <div class="ui grid">
+      <div class="left floated six wide column">
+        <button class="ui primary button" type="submit">Crear</button>
+      </div>
+      <div class="right floated right aligned six wide column">
+        <button class="ui red basic button" ng-click="clients.cleanForm()">Cancelar</button>
+      </div>
+    </div>
+  </form>
+</div>

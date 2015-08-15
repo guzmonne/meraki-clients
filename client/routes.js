@@ -1,34 +1,48 @@
-angular.module("socially").run(["$rootScope", "$location", function($rootScope, $location) {
+angular.module("conapps").run(["$rootScope", "$location", function($rootScope, $location) {
   $rootScope.$on("$stateChangeError", function(event, next, previous, error) {
     // We can catch the error thrown when the $requireUser promise is rejected
     // and redirect the user back to the main page
     if (error === "AUTH_REQUIRED") {
-      $location.path("/parties");
+      $location.path("/");
     }
   });
 }]);
 
-angular.module("socially").config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+angular.module("conapps").config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
   function($urlRouterProvider, $stateProvider, $locationProvider){
 
     $locationProvider.html5Mode(true);
 
     $stateProvider
-      .state('parties', {
-        url: '/parties',
-        templateUrl: 'client/parties/views/parties-list.ng.html',
-        controller: 'PartiesListCtrl'
+      .state('meraki_clients', {
+        url         : '/meraki_clients',
+        controller  : 'MerakiClientsCtrl',
+        templateUrl : 'client/meraki_clients/views/clients-index.ng.html',
+        controllerAs: 'clients',
+        abstract    : true
       })
-      .state('partyDetails', {
-        url: '/parties/:partyId',
-        templateUrl: 'client/parties/views/party-details.ng.html',
-        controller: 'PartyDetailsCtrl',
-        resolve: {
-          "currentUser": ["$meteor", function($meteor){
-            return $meteor.requireUser();
-          }]
+      .state('meraki_clients.index', {
+        url: '',
+        views: {
+          'segment': {
+            templateUrl: 'client/meraki_clients/views/clients-table.ng.html'
+          }
+        },
+        data: {
+          activeTab: 'list'
+        }
+      })
+      .state('meraki_clients.new', {
+        url: '/new',
+        views: {
+          'segment': {
+            templateUrl: 'client/meraki_clients/views/clients-form.ng.html'
+          }
+        },
+        data: {
+          activeTab: 'new'
         }
       });
 
-    $urlRouterProvider.otherwise("/parties");
+    $urlRouterProvider.otherwise("/meraki_clients");
   }]);
