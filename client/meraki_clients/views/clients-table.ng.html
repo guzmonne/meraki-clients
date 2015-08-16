@@ -53,9 +53,14 @@
 				<div class="ui active small inline loader"></div>
 			</td>
 		</tr>
-		<tr ng-if="clients.list.length === 0" class="warning center aligned">
+		<tr ng-if="clients.list.length === 0 && !clients.searchString" class="warning center aligned">
 			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}">
 				No se ha creado níngun cliente. <a ng-click="clients.activateTav('new')" ui-sref="meraki_clients.new">¿Desea crear uno?</a>
+			</td>
+		</tr>
+		<tr ng-if="clients.list.length === 0" class="warning center aligned">
+			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}">
+				No se ha creado níngun cliente que coicida con <a>{{clients.searchString}}</a>
 			</td>
 		</tr>
 		<tr ng-repeat="client in clients.list track by client._id"
@@ -69,7 +74,7 @@
 			<td>{{client.position}}</td>
 			<td>
 				<div class="ui list">
-					<a ng-repeat="phone in client.phones" class="item">
+					<a ng-repeat="phone in client.phones track by $index" class="item">
 						<i class="phone square icon"></i>
 						<div class="content">
 							<div class="description">
@@ -81,7 +86,7 @@
 			</td>
 			<td>
 				<div class="ui list">
-					<a ng-repeat="email in client.emails" class="item">
+					<a ng-repeat="email in client.emails track by $index" class="item">
 						<i class="mail square icon"></i>
 						<div class="content">
 							<div class="description">
@@ -93,7 +98,7 @@
 			</td>
 			<td>
 				<div class="ui list">
-					<a ng-repeat="address in client.addresses" class="item">
+					<a ng-repeat="address in client.addresses track by $index" class="item">
 						<i class="icon home"></i>
 						<div class="content">
 							<div class="header">{{address.street}}</div>

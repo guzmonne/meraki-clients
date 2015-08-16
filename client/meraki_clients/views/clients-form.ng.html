@@ -1,7 +1,13 @@
 <div class="ui container">
-  <form class="ui form" ng-class="{'error': clients.errors.length > 0}" ng-submit="clients.save()">
-    <h4 class="ui dividing header">
+  <form class="ui form"
+        name="clients.form"
+        ng-class="{'error': clients.errors.length > 0}"
+        ng-submit="clients.save()">
+    <h4 class="ui dividing header" ng-show="clients.activeTab === 'new'">
       Nuevo Cliente
+    </h4>
+    <h4 class="ui dividing header" ng-show="clients.activeTab === 'edit'">
+      Editar Cliente #{{clients.activeClient._id}}
     </h4>
     <div class="field">
       <div class="two fields">
@@ -113,11 +119,18 @@
       </p>
     </div>
     <div class="ui grid">
-      <div class="left floated six wide column">
+      <div class="left floated six wide column" ng-show="clients.activeTab === 'new'">
         <button class="ui primary button" type="submit">Crear</button>
       </div>
+      <div class="left floated six wide column" ng-show="clients.activeTab === 'edit'">
+        <button class="ui primary button" type="submit">Actualizar</button>
+      </div>
       <div class="right floated right aligned six wide column">
-        <button class="ui red basic button" ng-click="clients.cleanForm()">Cancelar</button>
+        <button class="ui red basic button"
+                ng-click="clients.cleanForm($event)"
+                ng-disabled="clients.form.$pristine">
+          {{(clients.activeTab === 'new') ? 'Cancelar' : 'Deshacer'}}
+        </button>
       </div>
     </div>
   </form>

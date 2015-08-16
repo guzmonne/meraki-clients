@@ -10,5 +10,7 @@ function onReady() {
   angular.bootstrap(document, ['conapps']);
 }
 
-angular.element(document).ready(onReady);
+Meteor.startup(function(){
+	angular.element(document).ready(onReady);
+});
 

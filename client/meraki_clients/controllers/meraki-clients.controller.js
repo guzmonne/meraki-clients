@@ -8,7 +8,12 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		// the clients are being loaded.
 		self.list       = null;
 		// Object to store the sorting object for the clients list collection
-		self.sort  = {};
+		self.sort       = {};
+		// String to store the 'searchString' with which to fiter the clients list
+		// There is also a private variable that will take the value of this one
+		// every 500ms to avoid repeated calls to the db.
+		self.searchString  = '';
+		self._searchString = '';
 		// Variable that shows or hides the selection boxes of the clients.
 		self.multipleSelection;
 		// Variable that stores the current active tab.
@@ -31,23 +36,28 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		$meteor.autorun($scope, function(){
 			$meteor.subscribe('clients-list', {
 				sort: $scope.getReactively('clients.sort')
-			}).then(function($handle){
-				// When the subscribe call is run we modify this variable to get rid
-				// of the spinner and show the clients. 
-				// We have to use the 'getReactively' method to react to changes on 
-				// the sort variable.
-				$scope.$watch('clients.sort', function(){
-					self.list = $meteor.collection(function(){
-						return Clients.find({}, {sort: $scope.getReactively('clients.sort')});
-					});
+			}, $scope.getReactively('clients._searchString'))
+				.then(function($handle){
+					// When the subscribe call is run we modify this variable to get rid
+					// of the spinner and show the clients. 
+					// We have to use the 'getReactively' method to react to changes on 
+					// the sort variable.
+					$scope.$watch('clients.sort', function(){
+						self.list = $meteor.collection(function(){
+							return Clients.find({}, {sort: $scope.getReactively('clients.sort')});
+						});
+					}, true);
+					// If we are on the edit tab, we setup the appropiate client. Because we 
+					// are instantiating the controller on an 'abstract' ui-state the 
+					// $stateParams object does not provides us with the correct ID, even
+					// though it is on the URL. That is how ui-route works and ther is 
+					// nothing we can do. So, we have to use this hack.
 					if (self.activeTab === 'edit'){
 						var id = $state.$current.locals.globals.$stateParams.id;
-						self.activeClient = $scope.$meteorObject(Clients, id, false);
-						console.log(self.activeClient);
-						self.selected.push(self.activeClient._id);
+						setUpActiveClient(id);
 					}
-				}, true);
-			});
+				}
+			);
 		});
 		// This is necessary for the first render of the template.
 		// This was a first attempt to change the activeClient object, depending
@@ -68,6 +78,8 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		self.isSelectedClass    = isSelectedClass;
 
 		self.cleanForm = cleanForm
+
+		self.throttledSearchString = _.throttle(throttledSearchString, 100);
 
 		self.addPhone   = addPhone;
 		self.addEmail   = addEmail;
@@ -163,11 +175,22 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 			return { street: '', city: '', dep: '' };
 		}
 		/**
-		 * Cleans the form to allow the creation of a new client
+		 * Cleans the form to allow the creation of a new client.
+		 * If we are creating a new one, we instantiate a default client object.
+		 * If we are editing a new one, we select the appropiate client from the 
+		 * Clients collection.
 		 * @return {Void} 
 		 */
-		function cleanForm(){
-			self.activeClient = defaults();
+		function cleanForm(e){
+			e.preventDefault();
+			if (self.activeTab === 'new')
+				self.activeClient = defaults();
+			if (self.activeTab === 'edit')
+				self.activeClient.reset();
+			self.newPhone   = '';
+			self.newEmail   = '';
+			self.newAddress = defaultAddress();
+			self.form.$setPristine();
 		}
 		/**
 		 * Add function call to simplify the code.
@@ -268,6 +291,33 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 				noErrors();
 			self.list.push(self.activeClient);
 			self.activeClient = defaults();
+		}
+		/**
+		 * Updates the activeClient object on the server.
+		 * To check for errors we get the client raw data and we eliminate the 
+		 * dates and the _id which are not recognize by the ClientSchema validate
+		 * method.
+		 * @return {[type]} [description]
+		 */
+		function update(){
+			var client = _.omit(
+				_.compactCloneObject(self.activeClient.getRawObject()),
+				'_id',
+				'createdAt',
+				'updatedAt'
+			);
+			if (!self.clientContext.validate(client)){
+				return handleErrors();
+			}
+			else
+				noErrors();
+			self.activeClient.save()
+				.then(function(result){
+					//console.log('Save Success! Docs Affected: ' + result);
+				})
+				.catch(function(err){
+					console.log(err);
+				});
 		}
 		/**
 		 * Checks that no unsaved inputs are left behind
@@ -393,18 +443,21 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 			return "";
 		};
 		/**
-		 * Helper function to regex the url location
-		 * @param  {RegEz} regex Custom regular expression to match against the
-		 *                       pathname. 
-		 *                       For Example: /\/edit\/(.*)/
-		 *                       It defaults to /(.*)/
-		 * @return {Array}       An array containing the match results.
+		 * Funtction that setups the correct client on the 'activeClient' object.
+		 * @param {Mongo.Id} id ID of the to-be edited client
 		 */
-		function parsePathName(regex){
-			regex || (regex = /(.*)/);
-			result = location.pathname.match(regex);
-			console.log(location.pathname, result); 
-			return result;
+		function setUpActiveClient(id){
+			self.activeClient = $scope.$meteorObject(Clients, id, false);
+			self.selected     = [self.activeClient._id];
+		}
+		/**
+		 * Function to update the _serachString with the value of searchString.
+		 * The reason of not using it ngModel directly is to be able to throttle
+		 * the functtion call to avoid filtering the collection so much.
+		 * @return {Void}
+		 */
+		function throttledSearchString(){
+			self._searchString = self.searchString;
 		}
 	}
 ]);

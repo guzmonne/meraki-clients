@@ -18,11 +18,17 @@
   	<i class="pencil icon"></i>
 		Editar
 	</a>
-	<div class="right menu">
+	<div class="right menu" ng-if="clients.activeTab === 'list'">
 		<div class="item">
 			<div class="ui transparent icon input">
-				<input type="text" placeholder="Buscar...">
-				<i class="search link icon"></i>
+				<input 	ng-change="clients.throttledSearchString()"
+								ng-model="clients.searchString"
+								type="text"
+								placeholder="Buscar...">
+				<i class="search link icon" ng-show="clients._searchString === ''"></i>
+				<i 	class="search link remove red icon"
+					 	ng-show="clients._searchString !== ''"
+					 	ng-click="clients.searchString = clients._searchString = ''"></i>
 			</div>
 		</div>
 	</div>
