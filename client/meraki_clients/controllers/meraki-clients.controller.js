@@ -1,5 +1,5 @@
-angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$stateParams', '$state', '$meteor', 
-	function($scope, $stateParams, $state, $meteor){
+angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '$meteor', 
+	function($scope, $state, $meteor){
 		// Store 'this' into a new variable to simplify the code
 		var self        = this;
 		// Hardcode the title here for testing purposes
@@ -40,6 +40,12 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 					self.list = $meteor.collection(function(){
 						return Clients.find({}, {sort: $scope.getReactively('clients.sort')});
 					});
+					if (self.activeTab === 'edit'){
+						var id = $state.$current.locals.globals.$stateParams.id;
+						self.activeClient = $scope.$meteorObject(Clients, id, false);
+						console.log(self.activeClient);
+						self.selected.push(self.activeClient._id);
+					}
 				}, true);
 			});
 		});
@@ -119,8 +125,12 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		 */
 		function activateTab(tabName){
 			if(!tabName && !angular.isString(tabName)) return;
-			self.activeTab    = tabName;
-			self.activeClient = defaults();
+			self.activeTab = tabName;
+			if (self.activeTab === 'new')
+				return self.activeClient = defaults();
+			if (self.activeTab === 'edit'){
+				self.activeClient = $scope.$meteorObject(Clients, self.selected[0], false);
+			}
 		}
 		/**
 		 * Pushes or removes an ID from a 'selected' array
@@ -346,8 +356,8 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		 * calls with the same clients will toggle the inclusion of it on 
 		 * the array.
 		 * We return nothing if 'multipleSelection' is true
-		 * @param  {[type]} client [description]
-		 * @return {[type]}        [description]
+		 * @param  {Client} client The selected client
+		 * @return {Void}
 		 */
 		function selectSingleClient(client){
 			if (self.multipleSelection) return;
@@ -363,7 +373,9 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		/**
 		 * ---
 		 * TODO
-		 * Fix this, it's messy
+		 * Fix this, it's messy. I had to do it this way because I wanted to call
+		 * a function inside the ngClass directive and I couldn't find a way to
+		 * do it. 
 		 * ---
 		 * Function that checks to see if the passed client, referenced by its
 		 * '_id' is currently selected. Which would mean that the client is the
@@ -380,5 +392,19 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 			}
 			return "";
 		};
+		/**
+		 * Helper function to regex the url location
+		 * @param  {RegEz} regex Custom regular expression to match against the
+		 *                       pathname. 
+		 *                       For Example: /\/edit\/(.*)/
+		 *                       It defaults to /(.*)/
+		 * @return {Array}       An array containing the match results.
+		 */
+		function parsePathName(regex){
+			regex || (regex = /(.*)/);
+			result = location.pathname.match(regex);
+			console.log(location.pathname, result); 
+			return result;
+		}
 	}
 ]);

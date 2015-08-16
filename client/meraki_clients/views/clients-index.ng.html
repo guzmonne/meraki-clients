@@ -10,7 +10,11 @@
   	<i class="add icon"></i>
 		Nuevo
 	</a>
-	<a ng-click="clients.activateTab('edit')" ui-sref="meraki_clients.edit" class="item inverted orange" ng-class="{'active': clients.activeTab === 'edit'}">
+	<a ng-click="clients.activateTab('edit')"
+		 ng-class="{'active': clients.activeTab === 'edit'}"
+		 ng-show="clients.selected.length === 1"
+		 ui-sref="meraki_clients.edit({id: clients.selected[0]})"
+		 class="item inverted orange">
   	<i class="pencil icon"></i>
 		Editar
 	</a>

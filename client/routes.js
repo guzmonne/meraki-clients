@@ -13,36 +13,5 @@ angular.module("conapps").config(['$urlRouterProvider', '$stateProvider', '$loca
 
     $locationProvider.html5Mode(true);
 
-    $stateProvider
-      .state('meraki_clients', {
-        url         : '/meraki_clients',
-        controller  : 'MerakiClientsCtrl',
-        templateUrl : 'client/meraki_clients/views/clients-index.ng.html',
-        controllerAs: 'clients',
-        abstract    : true
-      })
-      .state('meraki_clients.index', {
-        url: '',
-        views: {
-          'segment': {
-            templateUrl: 'client/meraki_clients/views/clients-table.ng.html'
-          }
-        },
-        data: {
-          activeTab: 'list'
-        }
-      })
-      .state('meraki_clients.new', {
-        url: '/new',
-        views: {
-          'segment': {
-            templateUrl: 'client/meraki_clients/views/clients-form.ng.html'
-          }
-        },
-        data: {
-          activeTab: 'new'
-        }
-      });
-
     $urlRouterProvider.otherwise("/meraki_clients");
   }]);
