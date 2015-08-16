@@ -1,18 +1,23 @@
 <div class="ui secondary menu">
-	<div class="right item">
-		<div 	class="ui red button"
-					ng-click="clients.remove()"
-					ng-class="{'disabled': clients.selected.length === 0}">
-			<i class="remove icon"></i> Eliminar 
+	<div class="right menu">
+		<div class="item">
+			<div class="ui input">
+				<sg-checkbox ng-model="clients.multipleSelection">Selección Múltiple</sg-checkbox>
+			</div>
+		</div>
+		<div class="item">
+			<div 	class="ui red button"
+						ng-click="clients.remove()"
+						ng-class="{'disabled': clients.selected.length === 0}">
+				<i class="remove icon"></i> Eliminar 
+			</div>
 		</div>
 	</div>
 </div>
 <table class="ui sortable celled table">
 	<thead>
 		<tr>
-			<th>
-				<sg-checkbox sg-class="fitted" ng-model="clients.all"></sg-checkbox>
-			</th>
+			<th ng-if="clients.multipleSelection"></th>
 			<th class="sorted"
 					ng-click="clients.sortBy('name')"
 					ng-class="{'ascending': clients.ascBy('name'), 'descending': clients.desBy('name')}">
@@ -28,14 +33,10 @@
 					ng-class="{'ascending': clients.ascBy('position'), 'descending': clients.desBy('position')}">
 				Cargo
 			</th>
-			<th class="sorted"
-					ng-click="clients.sortBy('phones')"
-					ng-class="{'ascending': clients.ascBy('phones'), 'descending': clients.desBy('phones')}">
+			<th class="sorted">
 				Telefonos
 			</th>
-			<th class="sorted"
-					ng-click="clients.sortBy('emails')"
-					ng-class="{'ascending': clients.ascBy('emails'), 'descending': clients.desBy('emails')}">
+			<th class="sorted">
 				Correos
 			</th>
 			<th class="sorted"
@@ -48,38 +49,46 @@
 
 	<tbody>
 		<tr ng-if="clients.list === null" class="center aligned">
-			<td colspan="7" class="center aligned">
+			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}" class="center aligned">
 				<div class="ui active small inline loader"></div>
 			</td>
 		</tr>
 		<tr ng-if="clients.list.length === 0" class="warning center aligned">
-			<td colspan="7">
+			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}">
 				No se ha creado níngun cliente. <a ng-click="clients.activateTav('new')" ui-sref="meraki_clients.new">¿Desea crear uno?</a>
 			</td>
 		</tr>
-		<tr ng-repeat="client in clients.list track by client._id">
-			<td><sg-checkbox sg-class="fitted" ng-click="clients.select(client._id)"></sg-checkbox></td>
+		<tr ng-repeat="client in clients.list track by client._id"
+				ng-click="clients.selectSingleClient(client)"
+				ng-class="clients.isSelectedClass(client._id)">
+			<td ng-if="clients.multipleSelection">
+				<sg-checkbox sg-class="fitted" ng-click="clients.select(client._id)"></sg-checkbox>
+			</td>
 			<td>{{client.name + ' ' + client.lastName}}</td>
 			<td>{{client.company}}</td>
 			<td>{{client.position}}</td>
 			<td>
 				<div class="ui list">
-					<div ng-repeat="phone in client.phones" class="item">
+					<a ng-repeat="phone in client.phones" class="item">
 						<i class="phone square icon"></i>
 						<div class="content">
-							{{phone}}
+							<div class="description">
+								{{phone}}
+							</div>
 						</div>
-					</div>
+					</a>
 				</div>
 			</td>
 			<td>
 				<div class="ui list">
-					<div ng-repeat="email in client.emails" class="item">
+					<a ng-repeat="email in client.emails" class="item">
 						<i class="mail square icon"></i>
 						<div class="content">
-							{{email}}
+							<div class="description">
+								{{email}}
+							</div>
 						</div>
-					</div>
+					</a>
 				</div>
 			</td>
 			<td>

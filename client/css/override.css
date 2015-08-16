@@ -1,0 +1,4 @@
+.ui.table tr.selected, .ui.table td.selected {
+    background: #E8E8E8 !important;
+    color: #000000 !important;
+}

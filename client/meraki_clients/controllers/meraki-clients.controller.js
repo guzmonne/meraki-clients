@@ -9,6 +9,8 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		self.list       = null;
 		// Object to store the sorting object for the clients list collection
 		self.sort  = {};
+		// Variable that shows or hides the selection boxes of the clients.
+		self.multipleSelection;
 		// Variable that stores the current active tab.
 		// This is only updated once, when the template is first shown.
 		// We must manage the changes to this variable manually to make
@@ -24,7 +26,8 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		// Instantiation of a ClientSchema context to validate the to-be saved
 		// objects, to avoid schema problems. 
 		self.clientContext = Schemas.ClientSchema.newContext();
-		// Subscription to the clients list inside an autorun
+		// Subscription to the clients list inside an autorun to be able to react 
+		// to changes in the collection reactively
 		$meteor.autorun($scope, function(){
 			$meteor.subscribe('clients-list', {
 				sort: $scope.getReactively('clients.sort')
@@ -34,21 +37,12 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 				// We have to use the 'getReactively' method to react to changes on 
 				// the sort variable.
 				$scope.$watch('clients.sort', function(){
-					setClientsList();
+					self.list = $meteor.collection(function(){
+						return Clients.find({}, {sort: $scope.getReactively('clients.sort')});
+					});
 				}, true);
 			});
 		});
-
-		function setClientsList(){
-			self.list = $meteor.collection(function(){
-				return Clients.find({}, {sort: $scope.getReactively('clients.sort')});
-			});
-		}
-
-/*
-		$meteor.autorun($scope, function(){
-		});
-*/
 		// This is necessary for the first render of the template.
 		// This was a first attempt to change the activeClient object, depending
 		// on the selected tab. If we are on the 'new' form, activeClient should
@@ -61,9 +55,11 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		 */
 		self.activateTab = activateTab;
 
-		self.all      = false;
-		self.selected = [];
-		self.select   = select;
+		self.all                = false;
+		self.selected           = [];
+		self.select             = select;
+		self.selectSingleClient = selectSingleClient;
+		self.isSelectedClass    = isSelectedClass;
 
 		self.cleanForm = cleanForm
 
@@ -84,6 +80,17 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 
 		self.save   = save;
 		self.remove = removeClients;
+		/*
+		 * WATCHERS
+		 */
+		/**
+		 * Every time the multipleSelection is toggled we will restart
+		 * the 'selected' array.
+		 * @return {Void}  
+		 */
+		$scope.$watch('clients.multipleSelection', function(){
+			self.selected = [];
+		});
 		/*
 		 * PRIVATE METHODS
 		 */
@@ -200,7 +207,6 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 			});
 			self.newAddress = defaultAddress();
 			angular.element('[name=street]').trigger('focus');
-			console.log(self.activeClient);
 		}
 		/**
 		 * Function call to remove a 'phone' from the phones array
@@ -250,7 +256,6 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 				return handleErrors();
 			else
 				noErrors();
-			console.log(client);
 			self.list.push(self.activeClient);
 			self.activeClient = defaults();
 		}
@@ -276,7 +281,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 		 * @return {Void} 
 		 */
 		function validateKey(key){
-			console.log(self.clientContext.validateOne(_.compactCloneObject(self.activeClient), key));
+			self.clientContext.validateOne(_.compactCloneObject(self.activeClient), key);
 		}
 		/**
 		 * If any errors where found, create an object that has its error messages.
@@ -318,6 +323,13 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 			if (!angular.isString(field)) return;
 			return self.sort.hasOwnProperty(field) && (self.sort[field] === -1) 
 		}
+		/**
+		 * Function that updates the sort object to trigger the sorting of the
+		 * clients list. For now we'll only sort by one column, and the direction
+		 * will change depending on the times the function is called.
+		 * @param  {String} field Field to sort by
+		 * @return {[type]}       [description]
+		 */
 		function sortBy(field){
 			if (self.sort.hasOwnProperty(field)) {
 				if (self.sort[field] === 1) 
@@ -328,7 +340,45 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$statePara
 				self.sort        = {};
 				self.sort[field] = 1;
 			}
-			console.log(self.sort);
 		}
+		/**
+		 * Function to add only one client to the 'selected' array. Multiple
+		 * calls with the same clients will toggle the inclusion of it on 
+		 * the array.
+		 * We return nothing if 'multipleSelection' is true
+		 * @param  {[type]} client [description]
+		 * @return {[type]}        [description]
+		 */
+		function selectSingleClient(client){
+			if (self.multipleSelection) return;
+			var currentClientId = self.selected[0];
+			if (!client || !client._id) return;
+			if (currentClientId && client._id === currentClientId) {
+				self.selected = [];
+				return; 
+			}
+			self.selected = [client._id];
+			return;
+		}
+		/**
+		 * ---
+		 * TODO
+		 * Fix this, it's messy
+		 * ---
+		 * Function that checks to see if the passed client, referenced by its
+		 * '_id' is currently selected. Which would mean that the client is the
+		 * only element on the 'selected' array.
+		 * We return nothing if 'multipleSelection' is true
+		 * @param  {Mongo._id}  clientId ID of the client
+		 * @return {String}          Returns the class to be added to the row
+		 */
+		function isSelectedClass(clientId){
+			if (self.multipleSelection) return "";
+			var currentClientId = self.selected[0];
+			if (currentClientId && currentClientId === clientId ){
+				return "selected";
+			}
+			return "";
+		};
 	}
 ]);
