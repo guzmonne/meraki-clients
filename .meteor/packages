@@ -12,6 +12,7 @@ flemay:less-autoprefixer
 aldeed:simple-schema
 aldeed:collection2
 matb33:collection-hooks
+chrismbeckett:toastr
 guzmonne:stringjs
 guzmonne:angular-gux
 guzmonne:semantic-gux

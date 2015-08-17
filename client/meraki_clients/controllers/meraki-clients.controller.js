@@ -197,10 +197,10 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		 * @param {Array} target  Array to push the new element.
 		 * @param {Any} element Any element to push into the target array
 		 */
-		function add(target, element){
-			if (!element) return;
-			if (!angular.isArray(target)) target = [];
-			target.push(element);
+		function add(object, target, element){
+			if (!object || !target || !element) return;
+			if (!angular.isArray(object[target])) object[target] = [];
+			object[target].push(element);
 		}
 		/**
 		 * Remove function call to simplify the code
@@ -217,7 +217,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		 */
 		function addPhone(){
 			if (self.newPhone === '') return
-			add(self.activeClient.phones, self.newPhone);
+			add(self.activeClient, 'phones', self.newPhone);
 			self.newPhone = '';
 		}
 		/**
@@ -225,7 +225,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		 */
 		function addEmail(){
 			if (self.newEmail === '') return;
-			add(self.activeClient.emails, self.newEmail);
+			add(self.activeClient, 'emails', self.newEmail);
 			self.newEmail = '';
 		}
 		/**
@@ -233,7 +233,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		 */
 		function addAddress(){
 			if (self.newAddress.street === '') return;
-			add(self.activeClient.addresses, {
+			add(self.activeClient, 'addresses', {
 				street: self.newAddress.street,
 				city  : self.newAddress.city,
 				dep   : self.newAddress.dep
@@ -291,6 +291,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 				noErrors();
 			self.list.push(self.activeClient);
 			self.activeClient = defaults();
+			toastr['success']("Se ha creado el cliente con exito.");
 		}
 		/**
 		 * Updates the activeClient object on the server.
@@ -313,9 +314,10 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 				noErrors();
 			self.activeClient.save()
 				.then(function(result){
-					//console.log('Save Success! Docs Affected: ' + result);
+					toastr['success']("Se ha actualizado el cliente con exito.");
 				})
 				.catch(function(err){
+					toastr['error']("Se ha producido un error al intentar actualizar el cliente.");
 					console.log(err);
 				});
 		}
@@ -352,6 +354,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 			self.errors = _.map(self.clientContext.invalidKeys(), function(o){
 				return _.extend({ msg: self.clientContext.keyErrorMessage(o.name) }, o);
 			});
+			toastr['error']("Se han encontrado errores en el formulario.");
 		}
 		/**
 		 * Checks if the checked field has any errors related to it.
@@ -457,6 +460,7 @@ angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '
 		 * @return {Void}
 		 */
 		function throttledSearchString(){
+			self.selected      = [];
 			self._searchString = self.searchString;
 		}
 	}
