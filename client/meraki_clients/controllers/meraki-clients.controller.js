@@ -1,9 +1,12 @@
-angular.module('conapps').controller('MerakiClientsCtrl', ['$scope', '$state', '$meteor', 
-	function($scope, $state, $meteor){
+angular.module('conapps').controller('MerakiClientsCtrl', 
+	['$scope', '$state', '$meteor', 'TitleService', 
+	function($scope, $state, $meteor, title){
 		// Store 'this' into a new variable to simplify the code
 		var self        = this;
 		// Hardcode the title here for testing purposes
 		self.title      = "Meraki Clients"
+		// Sets the title of the app on the header
+		title.set(self.title);
 		// Initialize the 'clients' list to show a loading screen while 
 		// the clients are being loaded.
 		self.list       = null;

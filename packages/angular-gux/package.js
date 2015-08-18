@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 
   api.addFiles([
     'module.js',
-    'directives/gux-enter.directive.js'
+    'directives/gux-enter.directive.js',
+    'directives/gux-semantic-dropdown.directive.js',
   ], ['client']);
 });

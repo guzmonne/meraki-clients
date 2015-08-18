@@ -1,8 +1,3 @@
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <base href="/">
-</head>
-
 <body>
   <!-- SIDEBAR -->
   <div class="ui sidebar inverted vertical menu">
@@ -23,21 +18,9 @@
     </a>
   </div>
   <!-- PUSHER -->
-  <div class="pusher" ng-controller="DashboardCtrl as dashboard">
+  <div class="pusher">
     <!-- HEADER -->
-    <div class="ui secondary pointing menu">
-      <a class="active item red">
-        CONApps 
-      </a>
-      <a class="icon item" ng-click="dashboard.toggleSidebar()">
-        <i class="sidebar icon"></i>
-      </a>
-      <div class="right menu">
-        <a class="ui item">
-          Iniciar Sesión
-        </a>
-      </div>
-    </div>  
+    <conapps-header></conapps-header>
     <!-- CONTENT -->
     <div ui-view class="pusher" style="padding: 10px"></div>
   </div>

@@ -19,6 +19,9 @@ Package.onUse(function(api) {
 
   api.addFiles([
     'module.js',
-    'directives/semantic-checkbox.directive.js'
+    'controllers/dropdown.controller.js',
+    'directives/sg-checkbox.directive.js',
+    'directives/sg-dropdown.directive.js',
+    'directives/sg-dropdown-group.directive.js'
   ], ['client']);
 });
