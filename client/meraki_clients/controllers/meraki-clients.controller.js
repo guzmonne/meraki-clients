@@ -135,17 +135,24 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 		/**
 		 * Sets the activeTab name to activate the appropiate tab.
 		 * Sets the activeClient to a default one [TODO]
-		 * @param  {[type]} tabName [description]
-		 * @return {[type]}         [description]
+		 * @param  {String} tabName We must set up different things depending on the 
+		 * tab param
+		 * @return {Void}
 		 */
 		function activateTab(tabName){
 			if(!tabName && !angular.isString(tabName)) return;
-			self.activeTab = tabName;
+			self.activeTab         = tabName;
 			if (self.activeTab === 'new')
 				return self.activeClient = defaults();
-			if (self.activeTab === 'edit'){
+			if (self.activeTab === 'edit')
 				self.activeClient = $scope.$meteorObject(Clients, self.selected[0], false);
-			}
+			// TODO
+			// This hides a bug that appears when someone selects a clients, goes to a 
+			// new a tab and then returns to the list. On return the checkbox loses its
+			// checkmark. So now when you move to another tab we reset the selected 
+			// array.
+			if (self.activeTab === 'list')
+				self.multipleSelection = false;
 		}
 		/**
 		 * Pushes or removes an ID from a 'selected' array
