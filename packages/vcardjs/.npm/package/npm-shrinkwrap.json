@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "vcards-js": {
+      "version": "2.2.0",
+      "dependencies": {
+        "moment": {
+          "version": "2.10.6"
+        }
+      }
+    }
+  }
+}

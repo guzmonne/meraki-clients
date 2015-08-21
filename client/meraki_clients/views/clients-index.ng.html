@@ -1,0 +1,34 @@
+<div class="ui top attached tabular menu">
+	<a ng-click="clients.activateTab('list')" ui-sref="meraki_clients.index" class="item" ng-class="{'active': clients.activeTab === 'list'}">
+		Lista
+	</a>
+	<a ng-click="clients.activateTab('new')" ui-sref="meraki_clients.new" class="item inverted green" ng-class="{'active': clients.activeTab === 'new'}">
+  	<i class="add icon"></i>
+		Nuevo
+	</a>
+	<a ng-click="clients.activateTab('edit')"
+		 ng-class="{'active': clients.activeTab === 'edit'}"
+		 ng-show="clients.selected.length === 1"
+		 ui-sref="meraki_clients.edit({id: clients.selected[0]})"
+		 class="item inverted orange">
+  	<i class="pencil icon"></i>
+		Editar
+	</a>
+	<div class="right menu" ng-if="clients.activeTab === 'list'">
+		<div class="item">
+			<div class="ui transparent icon input">
+				<input 	ng-change="clients.throttledSearchString()"
+								ng-model="clients.searchString"
+								type="text"
+								placeholder="Buscar...">
+				<i class="search link icon" ng-show="clients._searchString === ''"></i>
+				<i 	class="search link remove red icon"
+					 	ng-show="clients._searchString !== ''"
+					 	ng-click="clients.searchString = clients._searchString = ''"></i>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="ui bottom attached segment" ui-view="segment">
+	
+</div>

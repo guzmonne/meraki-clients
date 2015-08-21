@@ -1,0 +1,20 @@
+ <div class="ui secondary pointing menu">
+  <a class="active item red">
+    CONApps 
+  </a>
+  <a class="icon item" ng-click="dashboard.toggleSidebar()">
+    <i class="sidebar icon"></i>
+  </a>
+  <a class="aligned centered item">
+    <strong>{{dashboard.title}}</strong>
+  </a>
+  <div class="ui right dropdown item" ng-if="dashboard.user" gux-semantic-dropdown>
+    {{dashboard.user.profile.name}}
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <div class="item" ng-click="dashboard.logout()">
+        Cerrar Sesión
+      </div>
+    </div>
+  </div>
+</div>

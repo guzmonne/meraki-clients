@@ -1,0 +1,1 @@
+vCard = Npm.require('vcards-js');

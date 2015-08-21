@@ -1,0 +1,126 @@
+<div class="ui secondary menu">
+	<div class="item">
+		<div 	class="ui primary button"
+					id="popup"
+					ng-click="clients.createVCard(); $('#popup').popup()"
+					ng-class="{'disabled': clients.selected.length === 0}"
+					data-html="<div class='item'>Lalala<div id='qrcode'></div></div>">
+			<i class="book icon"></i> vCard 
+		</div>
+	</div>
+	<div class="item">
+		<div id="qrcode"></div>
+	</div>
+	<div class="right menu">
+		<div class="item">
+			<div class="ui input">
+				<sg-checkbox ng-model="clients.multipleSelection">Selección Múltiple</sg-checkbox>
+			</div>
+		</div>
+		<div class="item">
+			<div 	class="ui red button"
+						ng-click="clients.remove()"
+						ng-class="{'disabled': clients.selected.length === 0}">
+				<i class="remove icon"></i> Eliminar 
+			</div>
+		</div>
+	</div>
+</div>
+<table class="ui sortable selectable celled table">
+	<thead>
+		<tr>
+			<th ng-if="clients.multipleSelection"></th>
+			<th class="sorted"
+					ng-click="clients.sortBy('name')"
+					ng-class="{'ascending': clients.ascBy('name'), 'descending': clients.desBy('name')}">
+				Nombre
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('company')"
+					ng-class="{'ascending': clients.ascBy('company'), 'descending': clients.desBy('company')}">
+				Empresa
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('position')"
+					ng-class="{'ascending': clients.ascBy('position'), 'descending': clients.desBy('position')}">
+				Cargo
+			</th>
+			<th class="sorted">
+				Telefonos
+			</th>
+			<th class="sorted">
+				Correos
+			</th>
+			<th class="sorted"
+					ng-click="clients.sortBy('addresses')"
+					ng-class="{'ascending': clients.ascBy('addresses'), 'descending': clients.desBy('addresses')}">
+				Direcciones
+			</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr ng-if="clients.list === null" class="center aligned">
+			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}" class="center aligned">
+				<div class="ui active small inline loader"></div>
+			</td>
+		</tr>
+		<tr ng-if="clients.list.length === 0 && !clients.searchString" class="warning center aligned">
+			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}">
+				No se ha creado níngun cliente. <a ng-click="clients.activateTav('new')" ui-sref="meraki_clients.new">¿Desea crear uno?</a>
+			</td>
+		</tr>
+		<tr ng-if="clients.list.length === 0" class="warning center aligned">
+			<td colspan="{{ clients.multipleSelection ? 7 : 6 }}">
+				No se ha creado níngun cliente que coicida con <a>{{clients.searchString}}</a>
+			</td>
+		</tr>
+		<tr ng-repeat="client in clients.list track by client._id"
+				ng-click="clients.selectSingleClient(client)"
+				ng-class="clients.isSelectedClass(client._id)">
+			<td ng-if="clients.multipleSelection">
+				<sg-checkbox sg-class="fitted" ng-click="clients.select(client._id)"></sg-checkbox>
+			</td>
+			<td>{{client.name + ' ' + client.lastName}}</td>
+			<td>{{client.company}}</td>
+			<td>{{client.position}}</td>
+			<td>
+				<div class="ui list">
+					<a ng-repeat="phone in client.phones track by $index" class="item">
+						<i class="phone square icon"></i>
+						<div class="content">
+							<div class="description">
+								{{phone}}
+							</div>
+						</div>
+					</a>
+				</div>
+			</td>
+			<td>
+				<div class="ui list">
+					<a ng-repeat="email in client.emails track by $index" class="item">
+						<i class="mail square icon"></i>
+						<div class="content">
+							<div class="description">
+								{{email}}
+							</div>
+						</div>
+					</a>
+				</div>
+			</td>
+			<td>
+				<div class="ui list">
+					<a ng-repeat="address in client.addresses track by $index" class="item">
+						<i class="icon home"></i>
+						<div class="content">
+							<div class="header">{{address.street}}</div>
+							<div class="description">
+								{{address.city + ', ' + address.dep}}
+							</div>
+						</div>
+					</a>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -1,0 +1,24 @@
+# Meteor packages used by this project, one per line.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+meteor-platform
+accounts-base
+accounts-password
+useraccounts:semantic-ui
+urigo:angular@0.9.3
+angularui:angular-ui-router
+semantic:ui
+rzymek:moment-locale-es
+flemay:less-autoprefixer
+aldeed:simple-schema
+aldeed:collection2
+matb33:collection-hooks
+chrismbeckett:toastr
+guzmonne:stringjs
+guzmonne:angular-gux
+guzmonne:semantic-gux
+guzmonne:vcardjs
+guzmonne:filesaverjs
+guzmonne:qrcode.js
