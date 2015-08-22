@@ -13,6 +13,9 @@ angular.module("conapps").config(['$stateProvider',
         views: {
           'segment': {
             templateUrl: 'client/meraki_clients/views/clients-table.ng.html'
+          },
+          'form': {
+            templateUrl: 'client/meraki_clients/views/clients-form.ng.html'
           }
         },
         data: {

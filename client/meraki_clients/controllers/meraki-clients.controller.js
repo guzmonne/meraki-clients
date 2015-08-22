@@ -2,7 +2,10 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 	['$scope', '$state', '$meteor', 'TitleService', 
 	function($scope, $state, $meteor, title){
 		// Store 'this' into a new variable to simplify the code
-		var self        = this;
+		var self     = this;
+		var editing  = false;
+		// Readonly variable
+		self.readOnly = false;
 		// Hardcode the title here for testing purposes
 		self.title      = "Meraki Clients"
 		// Sets the title of the app on the header
@@ -102,7 +105,8 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 		self.save   = save;
 		self.remove = removeClients;
 
-		self.createVCard = createVCard;
+		self.openModal     = openModal;
+		self.downloadVCard = downloadVCard;
 		/*
 		 * WATCHERS
 		 */
@@ -123,12 +127,12 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 		 */
 		function defaults(){
 			return {
-				// Testing Purposes
+				/* Testing Purposes
 				name     : 'Guzman',
 				lastName : 'Monne',
 				company  : 'CONATEL',
 				position : 'Consultor',
-				// ----------------
+				---------------- */
 				phones    : [],
 				emails    : [],
 				addresses : [],
@@ -143,11 +147,18 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 		 */
 		function activateTab(tabName){
 			if(!tabName && !angular.isString(tabName)) return;
-			self.activeTab         = tabName;
-			if (self.activeTab === 'new')
-				return self.activeClient = defaults();
-			if (self.activeTab === 'edit')
+			self.readOnly  = false;
+			self.activeTab = tabName;
+			if (self.activeTab === 'new'){
+				editing = false;
+				self.activeClient = defaults();
+				return;
+			}
+			if (self.activeTab === 'edit'){
+				editing = true;
 				self.activeClient = $scope.$meteorObject(Clients, self.selected[0], false);
+				return;
+			}
 			// TODO
 			// This hides a bug that appears when someone selects a clients, goes to a 
 			// new a tab and then returns to the list. On return the checkbox loses its
@@ -195,10 +206,12 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 		 */
 		function cleanForm(e){
 			e.preventDefault();
-			if (self.activeTab === 'new')
+			if (editing === false)
 				self.activeClient = defaults();
-			if (self.activeTab === 'edit')
+			if (editing === true)
 				self.activeClient.reset();
+			if (self.readOnly)
+				makeCode();
 			self.newPhone   = '';
 			self.newEmail   = '';
 			self.newAddress = defaultAddress();
@@ -216,12 +229,17 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 		}
 		/**
 		 * Remove function call to simplify the code
+		 * We must put $dirty to 'true' to let the form know we have modified it. 
 		 * @param  {Array} target Array from where to remove the indexed element
 		 * @param  {Integer} index  Index of the to-be removed element
 		 * @return {Void}
 		 */
 		function remove(target, index){
 			if (!angular.isArray(target) || !angular.isNumber(index)) return;
+			if (self.readOnly)
+				makeCode();
+			self.form.$dirty    = true;
+			self.form.$pristine = false;
 			target.splice(index, 1);
 		}
 		/**
@@ -475,25 +493,30 @@ angular.module('conapps').controller('MerakiClientsCtrl',
 			self.selected      = [];
 			self._searchString = self.searchString;
 		}
-		function createVCard(){
-			var clientId = self.selected[0];
-			$meteor.call('createVCard', clientId)
-				.then(function(results){
-					var card     = results[0];
-					var fileName = results[1];
-					var blob     = new Blob([card], {type: "text/vcard"});
-					saveAs(blob, fileName);
-					makeCode(card);
+		function openModal(){
+			var clientId      = self.selected[0];
+			editing           = true;
+			self.readOnly     = true;
+			self.activeClient = $meteor.object(Clients, clientId, false);
+			$('.ui.modal')
+				.modal({
+					onVisible: function(){
+						makeCode();
+					}
 				})
-				.catch(function(err){
-					console.log(err);
-				});
+				.modal('show');
 		}
-		function makeCode(value){
-			if (!angular.isString(value)) return;
-			self.qrcode = new QRcode("qrcode");
-			self.qrcode.makeCode(value, "");
-			//console.log(value.replace(/(?:\r\n|\r|\n)/g));
+		function downloadVCard(){
+			var blob = new Blob([vCard(self.activeClient)], { type: 'text/vcard' });
+			saveAs(blob, self.activeClient.name + ' ' + self.activeClient.lastName + '.vcf');
+		}
+		function makeCode(){
+			if (self.qrcode)
+				self.qrcode.clear();
+			else
+				self.qrcode = new QRcode('qrcode', {width: 300, height: 300});
+			self.qrcode.makeCode(vCard(self.activeClient));
+			console.log(self.qrcode);
 		}
 	}
 ]);

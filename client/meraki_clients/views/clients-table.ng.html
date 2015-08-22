@@ -1,15 +1,13 @@
+<!-- MENU -->
 <div class="ui secondary menu">
 	<div class="item">
 		<div 	class="ui primary button"
 					id="popup"
-					ng-click="clients.createVCard(); $('#popup').popup()"
+					ng-click="clients.openModal()"
 					ng-class="{'disabled': clients.selected.length === 0}"
-					data-html="<div class='item'>Lalala<div id='qrcode'></div></div>">
+					data-html="<div class='item'><div id='qrcode'></div></div>">
 			<i class="book icon"></i> vCard 
 		</div>
-	</div>
-	<div class="item">
-		<div id="qrcode"></div>
 	</div>
 	<div class="right menu">
 		<div class="item">
@@ -26,6 +24,7 @@
 		</div>
 	</div>
 </div>
+<!-- TABLE -->
 <table class="ui sortable selectable celled table">
 	<thead>
 		<tr>

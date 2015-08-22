@@ -15,11 +15,15 @@
           <label>Nombre</label>
           <input  type="text"
                   placeholder="Nombre"
-                  ng-model="clients.activeClient.name">
+                  ng-model="clients.activeClient.name"
+                  ng-readonly="clients.readOnly">
         </div> 
         <div class="required field" ng-class="{'error': clients.fieldHasError('lastName')}">
           <label>Apellido</label>
-          <input type="text" ng-model="clients.activeClient.lastName" placeholder="Apellido">
+          <input  type="text"
+                  ng-model="clients.activeClient.lastName"
+                  placeholder="Apellido"
+                  ng-readonly="clients.readOnly">
         </div> 
       </div>
     </div>
@@ -27,11 +31,17 @@
       <div class="two fields">
         <div class="required field" ng-class="{'error': clients.fieldHasError('company')}">
           <label>Empresa</label>
-          <input type="text" ng-model="clients.activeClient.company" placeholder="Empresa">
+          <input  type="text"
+                  ng-model="clients.activeClient.company"
+                  placeholder="Empresa"
+                  ng-readonly="clients.readOnly">
         </div>
         <div class="required field" ng-class="{'error': clients.fieldHasError('position')}">
           <label>Cargo</label>
-          <input type="text" ng-model="clients.activeClient.position" placeholder="Cargo">
+          <input  type="text"
+                  ng-model="clients.activeClient.position"
+                  placeholder="Cargo"
+                  ng-readonly="clients.readOnly">
         </div>
       </div>
     </div>
@@ -46,7 +56,7 @@
             <i class="circular minus red link icon" ng-click="clients.removePhone($index)"></i>
           </div>
         </div>
-        <div class="four wide field">
+        <div class="four wide field" ng-hide="clients.readOnly">
           <div class="ui icon input">
             <input type="text" ng-model="clients.newPhone" placeholder="Telefono #{{clients.activeClient.phones.length + 1}}" gux-enter="clients.addPhone()">
             <i class="circular plus green link icon" ng-click="clients.addPhone()"></i>
@@ -65,7 +75,7 @@
             <i class="circular minus red link icon" ng-click="clients.removeEmail($index)"></i>
           </div>
         </div>
-        <div class="field">
+        <div class="field" ng-hide="clients.readOnly">
           <div class="ui icon input">
             <input type="text" gux-enter="clients.addEmail()" ng-model="clients.newEmail" placeholder="Correo #{{clients.activeClient.emails.length + 1}}">
             <i class="circular plus green link icon" ng-click="clients.addEmail()"></i>
@@ -86,13 +96,14 @@
           <input type="text" ng-model="address.dep" placeholder="Departamento #{{$index}}">
         </div>
         <div class="field">
-          <button class="ui inverted circular basic icon red button" ng-click="clients.removeAddress($index); $event.preventDefault()">
+          <button   class="ui inverted circular basic icon red button"
+                    ng-click="clients.removeAddress($index); $event.preventDefault()">
             <i class="minus icon"></i>
           </button>
         </div>
       </div>
     </div>
-    <div class="field">
+    <div class="field" ng-hide="clients.readOnly">
       <div class="four fields">
         <div class="field">
           <input type="text" name="street" ng-model="clients.newAddress.street" gux-enter="clients.addAddress()" placeholder="Calle #{{clients.activeClient.addresses.length + 1}}">
